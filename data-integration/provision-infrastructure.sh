@@ -11,7 +11,7 @@ echo $retry_attempts
 
 while [ "$STATUS" != "ACTIVE" ] && [ $retry_attempts -gt 0 ]
 do
-    eksctl create cluster --name "$cluster_name" --region us-east-1 --nodes-max 3 --nodes-min 1 --node-type t2.micro --zones=us-east-1a,us-east-1b,us-east-1d
+    eksctl create cluster --name "$cluster_name" --region us-east-1 --nodes-max 3 --nodes-min 1 --node-type t2.small --zones=us-east-1a,us-east-1b,us-east-1d
     if [ $? -ne 0 ]; then
          echo "Waiting for service role.."
          aws cloudformation wait stack-create-complete --stack-name=EKS-$cluster_name-ServiceRole
