@@ -11,7 +11,7 @@ echo $retry_attempts
 
 while [ "$STATUS" != "ACTIVE" ] && [ $retry_attempts -gt 0 ]
 do
-    eksctl create cluster --name "$cluster_name" --region us-east-1 --nodes-max 3 --nodes-min 1 --node-type m5.large --zones=us-east-1a,us-east-1b,us-east-1d
+    eksctl create cluster --name "$cluster_name" --region us-east-1 --nodes-max 3 --nodes-min 1 --node-type t2.micro --zones=us-east-1a,us-east-1b,us-east-1d
     if [ $? -ne 0 ]; then
          echo "Waiting for service role.."
          aws cloudformation wait stack-create-complete --stack-name=EKS-$cluster_name-ServiceRole
@@ -69,7 +69,7 @@ database_name=ballerina-kubernetes-"$NEW_UUID"
 if [ "$db" == "mysql" ];then
 
 aws rds create-db-instance --db-instance-identifier "$database_name" \
-    --db-instance-class db.t2.medium \
+    --db-instance-class db.t2.micro \
     --engine "$db" \
     --allocated-storage 10 \
     --master-username masterawsuser \
@@ -82,7 +82,7 @@ db_port=3306
 elif [ "$db" == "sqlserver-se" ];then
 
 aws rds create-db-instance --db-instance-identifier "$database_name" \
-    --db-instance-class db.m4.large \
+    --db-instance-class db.t2.micro \
     --engine "$db"  \
     --allocated-storage 20  \
     --master-username masterawsuser  \
@@ -96,7 +96,7 @@ db_port=1433
 elif [ "$db" == "oracle-se2" ];then
 
 aws rds create-db-instance --db-instance-identifier "$database_name" \
-    --db-instance-class db.t2.medium  \
+    --db-instance-class db.t2.micro  \
     --engine "$db"  \
     --allocated-storage 10  \
     --master-username masterawsuser  \
@@ -111,9 +111,9 @@ fi
 #Wait for the database to become available
 aws rds wait  db-instance-available  --db-instance-identifier "$database_name"
 #retrieve the database hostname
+echo "DatabaseHost="$(aws rds describe-db-instances --db-instance-identifier="$database_name" --query="[DBInstances][][Endpoint][].{Address:Address}" --output=text) >> $output_dir/infrastructure.properties
 echo "DatabasePort=$db_port" >> $output_dir/infrastructure.properties
 echo "DatabaseName=$database_name" >> $output_dir/infrastructure.properties
-echo "DatabaseHost="$(aws rds describe-db-instances --db-instance-identifier="$database_name" --query="[DBInstances][][Endpoint][].{Address:Address}" --output=text) >> $output_dir/infrastructure.properties
 echo "DBUsername=masterawsuser" >> $output_dir/infrastructure.properties
 echo "DBPassword=masteruserpassword" >> $output_dir/infrastructure.properties
 echo "ClusterName=$cluster_name" >> $output_dir/infrastructure.properties
