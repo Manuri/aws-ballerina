@@ -69,7 +69,7 @@ database_name=ballerina-kubernetes-"$NEW_UUID"
 ##create the database
 
 if [ "$db" == "mysql" ];then
-
+echo "Creating a MySQL instance"
 aws rds create-db-instance --db-instance-identifier "$database_name" \
     --db-instance-class db.t2.micro \
     --engine "$db" \
@@ -82,7 +82,7 @@ aws rds create-db-instance --db-instance-identifier "$database_name" \
 db_port=3306
 
 elif [ "$db" == "sqlserver-se" ];then
-
+echo "Creating an SQL Server instance"
 aws rds create-db-instance --db-instance-identifier "$database_name" \
     --db-instance-class db.t2.micro \
     --engine "$db"  \
@@ -96,7 +96,7 @@ aws rds create-db-instance --db-instance-identifier "$database_name" \
 db_port=1433
 
 elif [ "$db" == "oracle-se2" ];then
-
+echo "Creating an Oracle instance"
 aws rds create-db-instance --db-instance-identifier "$database_name" \
     --db-instance-class db.t2.micro  \
     --engine "$db"  \
