@@ -3,7 +3,7 @@
 output_dir=$2
 echo $output_dir
 
-cluster_name="ballerina-test-cluster"
+cluster_name="ballerina-test-cluster-data"
 retry_attempts=3
 config_file=~/.kube/config
 echo $retry_attempts
@@ -12,6 +12,8 @@ echo $retry_attempts
 while [ "$STATUS" != "ACTIVE" ] && [ $retry_attempts -gt 0 ]
 do
     eksctl create cluster --name "$cluster_name" --region us-east-1 --nodes-max 3 --nodes-min 1 --node-type t2.small --zones=us-east-1a,us-east-1b,us-east-1d
+    #Failed cluster creation - another cluster is being created, so wait for cluster to be created - This needs to be done
+    #in case there are multiple test plans are created. i.e. There multiple infra combinations.
     if [ $? -ne 0 ]; then
          echo "Waiting for service role.."
          aws cloudformation wait stack-create-complete --stack-name=EKS-$cluster_name-ServiceRole
