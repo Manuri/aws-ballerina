@@ -29,7 +29,7 @@ do
 done
 
 #delete database
-db_identifier=${infra_cleanup_config[DBName]}
+db_identifier=${infra_cleanup_config[DatabaseName]}
 aws rds delete-db-instance --db-instance-identifier "$db_identifier" --skip-final-snapshot
 echo "rds deletion triggered"
 
