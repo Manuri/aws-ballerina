@@ -1,24 +1,42 @@
 #!bin/bash
 
 echo "Resource deletion script is being executed !"
-DIR=$2
+echo "First argument"
+echo ${1}
+DIR=${2}
 echo $DIR
+ls ${DIR}
 
-testplan_props=${DIR}/testplan-props.properties
-infra_props=${DIR}/infrastructure.properties
+# Read configuration into an associative array
+declare -A infra_cleanup_config
+# IFS is the 'internal field separator'. In this case, your file uses '='
+IFS="="
+while read -r key value
+do
+     infra_cleanup_config[$key]=$value
+done < ${DIR}/infrastructure-cleanup.properties
+unset IFS
+
+#delete kubernetes services
+services_to_be_deleted=${infra_cleanup_config[ServicesToBeDeleted]}
+IFS=',' read -r -a services_array <<< ${services_to_be_deleted}
+unset IFS
+
+for service in "${services_array[@]}"
+do
+   echo "Deleting $service"
+   kubectl delete svc ${service}
+done
 
 #delete database
-db_identifier=`cat ${infra_props} | grep -w DatabaseName ${infra_props} | cut -d'=' -f2`
+db_identifier=${infra_cleanup_config[DBName]}
 aws rds delete-db-instance --db-instance-identifier "$db_identifier" --skip-final-snapshot
 echo "rds deletion triggered"
 
-delete_cluster=`cat ${testplan_props} | grep -w DeleteCluster ${testplan_props} | cut -d'=' -f2`
-if [ "$delete_cluster" == "TRUE" ];then
-	#delete cluster resources
-	cluster_name=`cat ${infra_props} | grep -w ClusterName ${infra_props} | cut -d'=' -f2`
-	aws cloudformation delete-stack --stack-name=EKS-$cluster_name-DefaultNodeGroup
-	aws cloudformation delete-stack --stack-name=EKS-$cluster_name-ControlPlane
-	aws cloudformation delete-stack --stack-name=EKS-$cluster_name-VPC
-	aws cloudformation delete-stack --stack-name=EKS-$cluster_name-ServiceRole
-	echo " cluster resources deletion triggered"
-fi
+#delete cluster resources
+cluster_name=${infra_cleanup_config[ClusterName]}
+aws cloudformation delete-stack --stack-name=EKS-$cluster_name-DefaultNodeGroup
+aws cloudformation delete-stack --stack-name=EKS-$cluster_name-ControlPlane
+aws cloudformation delete-stack --stack-name=EKS-$cluster_name-VPC
+aws cloudformation delete-stack --stack-name=EKS-$cluster_name-ServiceRole
+echo " cluster resources deletion triggered"

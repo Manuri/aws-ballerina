@@ -115,7 +115,9 @@ aws rds wait  db-instance-available  --db-instance-identifier "$database_name"
 #retrieve the database hostname
 echo "DatabaseHost="$(aws rds describe-db-instances --db-instance-identifier="$database_name" --query="[DBInstances][][Endpoint][].{Address:Address}" --output=text) >> $output_dir/infrastructure.properties
 echo "DatabasePort=$db_port" >> $output_dir/infrastructure.properties
-echo "DatabaseName=$database_name" >> $output_dir/infrastructure.properties
 echo "DBUsername=masterawsuser" >> $output_dir/infrastructure.properties
 echo "DBPassword=masteruserpassword" >> $output_dir/infrastructure.properties
 echo "ClusterName=$cluster_name" >> $output_dir/infrastructure.properties
+
+echo "DatabaseName=$database_name" >> $output_dir/infrastructure-cleanup.properties
+echo "ClusterName=$cluster_name" >> $output_dir/infrastructure-cleanup.properties
