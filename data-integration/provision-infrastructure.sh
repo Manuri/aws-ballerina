@@ -3,7 +3,7 @@
 output_dir=$2
 echo $output_dir
 
-cluster_name="ballerina-test-cluster-data-round7"
+cluster_name="ballerina-test-cluster-data-round8"
 retry_attempts=3
 config_file=~/.kube/config
 echo $retry_attempts
