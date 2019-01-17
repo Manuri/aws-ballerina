@@ -1,9 +1,12 @@
 #!bin/bash
 
+work_dir=`pwd`
+echo $work_dir
 output_dir=$2
 echo $output_dir
 
 cluster_name="ballerina-test-cluster-data-round9"
+cluster_region="us-east-1"
 retry_attempts=3
 config_file=~/.kube/config
 echo $retry_attempts
@@ -11,7 +14,7 @@ echo $retry_attempts
 
 while [ "$STATUS" != "ACTIVE" ] && [ $retry_attempts -gt 0 ]
 do
-    eksctl create cluster --name "$cluster_name" --region us-east-1 --nodes-max 3 --nodes-min 1 --node-type t2.small --zones=us-east-1a,us-east-1b,us-east-1d
+    eksctl create cluster --name "$cluster_name" --region "$cluster_region" --nodes-max 3 --nodes-min 1 --node-type t2.small --zones=us-east-1a,us-east-1b,us-east-1d
     #Failed cluster creation - another cluster is being created, so wait for cluster to be created - This needs to be done
     #in case there are multiple test plans are created. i.e. There multiple infra combinations.
     if [ $? -ne 0 ]; then
@@ -48,7 +51,7 @@ fi
 # Check if config file exists, if it does not exist create the config file
 if [ ! -f "$config_file" ];then
     echo "config file does not exist"
-    eksctl utils write-kubeconfig --name $cluster_name --region us-east-1
+    eksctl utils write-kubeconfig --name $cluster_name --region $cluster_region
 fi
 
 infra_properties=$output_dir/infrastructure.properties
@@ -61,10 +64,6 @@ NEW_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 
 #database-name
 database_name=ballerina-kubernetes-"$NEW_UUID"
-
-# echo $kube_master
-# echo $output_dir
-# echo "KUBERNETES_MASTER=$kube_master" > $output_dir/k8s.properties
 
 ##create the database
 
@@ -118,6 +117,8 @@ echo "DatabasePort=$db_port" >> $output_dir/infrastructure.properties
 echo "DBUsername=masterawsuser" >> $output_dir/infrastructure.properties
 echo "DBPassword=masteruserpassword" >> $output_dir/infrastructure.properties
 echo "ClusterName=$cluster_name" >> $output_dir/infrastructure.properties
+echo "ClusterRegion=$cluster_region">> $output_dir/infrastructure.properties
 
 echo "DatabaseName=$database_name" >> $output_dir/infrastructure-cleanup.properties
 echo "ClusterName=$cluster_name" >> $output_dir/infrastructure-cleanup.properties
+echo "ClusterRegion=$cluster_region">> $output_dir/infrastructure-cleanup.properties
