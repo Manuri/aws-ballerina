@@ -5,7 +5,7 @@ echo $work_dir
 output_dir=$2
 echo $output_dir
 
-cluster_name="ballerina-test-cluster-data-round9"
+cluster_name="ballerina-test-cluster-data-round10"
 cluster_region="us-east-1"
 retry_attempts=3
 config_file=~/.kube/config
