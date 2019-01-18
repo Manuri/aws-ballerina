@@ -5,7 +5,7 @@ echo $work_dir
 output_dir=$2
 echo $output_dir
 
-cluster_name="ballerina-test-cluster-data-round12"
+cluster_name="ballerina-test-cluster-data-round13"
 cluster_region="us-east-1"
 retry_attempts=3
 config_file_name=ballerina-config.yaml
