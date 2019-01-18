@@ -8,13 +8,14 @@ echo $output_dir
 cluster_name="ballerina-test-cluster-data-round10"
 cluster_region="us-east-1"
 retry_attempts=3
-config_file=~/.kube/config
+config_file_name=ballerina-config.yaml
+config_file=$output_dir/$config_file_name
 echo $retry_attempts
 
 
 while [ "$STATUS" != "ACTIVE" ] && [ $retry_attempts -gt 0 ]
 do
-    eksctl create cluster --name "$cluster_name" --region "$cluster_region" --nodes-max 3 --nodes-min 1 --node-type t2.small --zones=us-east-1a,us-east-1b,us-east-1d
+    eksctl create cluster --name "$cluster_name" --region "$cluster_region" --nodes-max 3 --nodes-min 1 --node-type t2.small --zones=us-east-1a,us-east-1b,us-east-1d --kubeconfig=${config_file}
     #Failed cluster creation - another cluster is being created, so wait for cluster to be created - This needs to be done
     #in case there are multiple test plans are created. i.e. There multiple infra combinations.
     if [ $? -ne 0 ]; then
@@ -32,6 +33,7 @@ do
         #    rm $config_file
         #fi
 
+        #current_context=$(kubectl config current-context --kubeconfig=${config_file})
         #Configure the security group of nodes to allow traffic from outside
         node_security_group=$(aws ec2 describe-security-groups --filter Name=tag:aws:cloudformation:logical-id,Values=NodeSecurityGroup --query="SecurityGroups[0].GroupId" --output=text)
         aws ec2 authorize-security-group-ingress --group-id $node_security_group --protocol tcp --port 0-65535 --cidr 0.0.0.0/0
@@ -118,6 +120,8 @@ echo "DBUsername=masterawsuser" >> $output_dir/infrastructure.properties
 echo "DBPassword=masteruserpassword" >> $output_dir/infrastructure.properties
 echo "ClusterName=$cluster_name" >> $output_dir/infrastructure.properties
 echo "ClusterRegion=$cluster_region">> $output_dir/infrastructure.properties
+echo "ConfigFileName=$config_file_name">> $output_dir/infrastructure.properties
+#echo "CurrentKubeContext=$current_context">> $output_dir/infrastructure.properties
 
 echo "DatabaseName=$database_name" >> $output_dir/infrastructure-cleanup.properties
 echo "ClusterName=$cluster_name" >> $output_dir/infrastructure-cleanup.properties
