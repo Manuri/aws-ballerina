@@ -28,12 +28,6 @@ do
          echo "Waiting for node-group.."
          aws cloudformation wait stack-create-complete --stack-name=EKS-$cluster_name-DefaultNodeGroup
     else
-        #if the cluster creation is succesful , any existing config files are removed
-        #if [ -f "$config_file" ];then
-        #    rm $config_file
-        #fi
-
-        #current_context=$(kubectl config current-context --kubeconfig=${config_file})
         #Configure the security group of nodes to allow traffic from outside
         node_security_group=$(aws ec2 describe-security-groups --filter Name=tag:aws:cloudformation:logical-id,Values=NodeSecurityGroup --query="SecurityGroups[0].GroupId" --output=text)
         aws ec2 authorize-security-group-ingress --group-id $node_security_group --protocol tcp --port 0-65535 --cidr 0.0.0.0/0
@@ -49,12 +43,6 @@ if [ "$STATUS" != "ACTIVE" ];then
     echo "state is not active"
     exit 1
 fi
-
-# Check if config file exists, if it does not exist create the config file
-#if [ ! -f "$config_file" ];then
-#    echo "config file does not exist"
-#    eksctl utils write-kubeconfig --name $cluster_name --region $cluster_region
-#fi
 
 infra_properties=$output_dir/infrastructure.properties
 testplan_properties=$output_dir/testplan-props.properties
@@ -121,7 +109,6 @@ echo "DBPassword=masteruserpassword" >> $output_dir/infrastructure.properties
 echo "ClusterName=$cluster_name" >> $output_dir/infrastructure.properties
 echo "ClusterRegion=$cluster_region">> $output_dir/infrastructure.properties
 echo "ConfigFileName=$config_file_name">> $output_dir/infrastructure.properties
-#echo "CurrentKubeContext=$current_context">> $output_dir/infrastructure.properties
 
 echo "DatabaseName=$database_name" >> $output_dir/infrastructure-cleanup.properties
 echo "ClusterName=$cluster_name" >> $output_dir/infrastructure-cleanup.properties
