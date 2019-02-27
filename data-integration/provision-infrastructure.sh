@@ -27,7 +27,11 @@ database_version=${db_details["DBEngineVersion"]}
 database_name=$(generate_random_db_name)
 
 #### CREATE DATABASE AND RETRIEVE THE HOST
+echo "CREATE DATABASE AND RETRIEVE THE HOST"
 database_host=$(create_database ${database_type} ${database_version} ${database_name})
+echo "=========DBHOST==== $database_host"
+
+echo "CREATE DB OVER"
 
 #### WRITE INFRA PROPERTIES TO BE PROPAGATED INTO DEPLOYMENT STAGE
 declare -A infra_props;
@@ -47,3 +51,4 @@ infra_cleanup_props[${cluster_name_key}]=${cluster_name}
 infra_cleanup_props[${cluster_region_key}]=${cluster_region}
 
 write_to_properties_file ${output_dir}/infrastructure-cleanup.properties infra_cleanup_props
+echo "PROVISION INFRA OVER!!!!"
