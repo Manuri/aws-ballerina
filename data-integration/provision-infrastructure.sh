@@ -16,7 +16,7 @@ cluster_region="us-east-1"
 config_file_name=ballerina-config.yaml
 config_file=${output_dir}/${config_file_name}
 
-create_default_cluster ${output_dir} ${cluster_name}
+#create_default_cluster ${output_dir} ${cluster_name}
 
 #### READ DATABASE DETAILS FROM testplan-props.properties
 declare -A db_details
