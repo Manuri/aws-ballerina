@@ -34,6 +34,8 @@ function create_database() {
 
     aws rds wait  db-instance-available  --db-instance-identifier "$database_name"
 
+    echo $(aws rds describe-db-instances --db-instance-identifier "$database_name")
+
     local db_host=$(aws rds describe-db-instances --db-instance-identifier="$database_name" --query="[DBInstances][][Endpoint][].{Address:Address}" --output=text);
     echo ${db_host}
 }
