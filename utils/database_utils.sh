@@ -22,6 +22,7 @@ function create_database() {
     local db_type=$1
     local db_version=$2
     local database_name=$3
+    local __db_host=$4
 
     aws rds create-db-instance --db-instance-identifier ${database_name} \
         --db-instance-class db.t2.micro \
@@ -34,8 +35,8 @@ function create_database() {
 
     aws rds wait  db-instance-available  --db-instance-identifier "$database_name"
 
-    local db_host=$(aws rds describe-db-instances --db-instance-identifier="$database_name" --query="[DBInstances][][Endpoint][].{Address:Address}" --output=text);
-    echo ${db_host}
+    eval $__db_host=$(aws rds describe-db-instances --db-instance-identifier="$database_name" --query="[DBInstances][][Endpoint][].{Address:Address}" --output=text);
+    #echo ${db_host}
 }
 
 function create_default_database_and_write_infra_properties() {

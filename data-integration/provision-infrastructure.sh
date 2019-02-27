@@ -28,7 +28,9 @@ database_name=$(generate_random_db_name)
 
 #### CREATE DATABASE AND RETRIEVE THE HOST
 echo "CREATE DATABASE AND RETRIEVE THE HOST"
-database_host=$(create_database ${database_type} ${database_version} ${database_name})
+echo "DATABASE DETAILS: ${database_type} ${database_version} ${database_name}"
+#database_host=$(create_database ${database_type} ${database_version} ${database_name})
+create_database ${database_type} ${database_version} ${database_name} database_host
 echo "=========DBHOST==== $database_host"
 
 echo "CREATE DB OVER"
