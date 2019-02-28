@@ -35,10 +35,17 @@ echo "rds deletion triggered"
 
 #delete cluster resources
 cluster_name=${infra_cleanup_config[ClusterName]}
-aws cloudformation delete-stack --stack-name=EKS-$cluster_name-DefaultNodeGroup
-aws cloudformation delete-stack --stack-name=EKS-$cluster_name-ControlPlane
-aws cloudformation delete-stack --stack-name=EKS-$cluster_name-ServiceRole
-aws cloudformation delete-stack --stack-name=EKS-$cluster_name-VPC
+#aws cloudformation delete-stack --stack-name=EKS-$cluster_name-DefaultNodeGroup
+#aws cloudformation delete-stack --stack-name=EKS-$cluster_name-ControlPlane
+#aws cloudformation delete-stack --stack-name=EKS-$cluster_name-ServiceRole
+#aws cloudformation delete-stack --stack-name=EKS-$cluster_name-VPC
+
+aws cloudformation delete-stack --stack-name "${cluster_name}-worker-nodes"
+aws eks delete-cluster --name "${cluster_name}"
+aws wait cluster-deleted --cluster-identifier "${cluster_name}"
+aws eks describe-cluster --name "${cluster_name}" --query "cluster.status"
+aws cloudformation delete-stack --stack-name "${cluster_name}"
+
 
 #eksctl delete cluster --name=$cluster_name
 echo " cluster resources deletion triggered"
