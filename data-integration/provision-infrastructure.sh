@@ -10,15 +10,15 @@ grand_parent_path=$(dirname ${parent_path})
 output_dir=$2
 echo ${output_dir}
 
-#### CREATE CLUSTER
+echo "CREATE DEFAULT CLUSTER"
 cluster_name=$(generate_random_cluster_name)
 cluster_region="us-east-1"
 config_file_name=ballerina-config.yaml
 config_file=${output_dir}/${config_file_name}
 
-#create_default_cluster ${output_dir} ${cluster_name}
+create_default_cluster ${output_dir} ${cluster_name}
 
-#### READ DATABASE DETAILS FROM testplan-props.properties
+echo "READ DATABASE DETAILS FROM testplan-props.properties"
 declare -A db_details
 read_property_file ${output_dir}/testplan-props.properties db_details
 
@@ -26,12 +26,10 @@ database_type=${db_details["DBEngine"]}
 database_version=${db_details["DBEngineVersion"]}
 database_name=$(generate_random_db_name)
 
-#### CREATE DATABASE AND RETRIEVE THE HOST
 echo "CREATE DATABASE AND RETRIEVE THE HOST"
-echo "DATABASE DETAILS: ${database_type} ${database_version} ${database_name}"
-#database_host=$(create_database ${database_type} ${database_version} ${database_name})
+echo "DATABASE DETAILS: DB_TYPE: ${database_type} | DB_VERSION:${database_version} | DB_NAME: ${database_name}"
 create_database ${database_type} ${database_version} ${database_name} database_host
-echo "=========DBHOST==== $database_host"
+echo "DBHOST: $database_host"
 
 echo "CREATE DB OVER"
 

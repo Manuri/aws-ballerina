@@ -49,7 +49,7 @@ function create_default_database_and_write_infra_properties() {
     database_name=$(generate_random_db_name)
 
     #### CREATE DATABASE AND RETRIEVE THE HOST
-    database_host_key=$(create_database ${database_type} ${database_version} ${database_name})
+    create_database ${database_type} ${database_version} ${database_name} database_host_key
 
     #### WRITE INFRA PROPERTIES TO BE PROPAGATED INTO DEPLOYMENT STAGE
     declare -A infra_props;
