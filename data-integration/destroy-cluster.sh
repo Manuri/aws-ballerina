@@ -44,7 +44,11 @@ aws cloudformation delete-stack --stack-name "${cluster_name}-worker-nodes"
 aws eks delete-cluster --name "${cluster_name}"
 aws eks wait cluster-deleted --name "${cluster_name}"
 aws eks describe-cluster --name "${cluster_name}" --query "cluster.status"
-aws cloudformation delete-stack --stack-name "${cluster_name}"
+#aws cloudformation delete-stack --stack-name "${cluster_name}"
+aws cloudformation delete-stack --stack-name=EKS-$cluster_name-DefaultNodeGroup
+aws cloudformation delete-stack --stack-name=EKS-$cluster_name-ControlPlane
+aws cloudformation delete-stack --stack-name=EKS-$cluster_name-ServiceRole
+aws cloudformation delete-stack --stack-name=EKS-$cluster_name-VPC
 
 
 #eksctl delete cluster --name=$cluster_name
