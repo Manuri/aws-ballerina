@@ -42,7 +42,7 @@ cluster_name=${infra_cleanup_config[ClusterName]}
 
 aws cloudformation delete-stack --stack-name "${cluster_name}-worker-nodes"
 aws eks delete-cluster --name "${cluster_name}"
-aws wait cluster-deleted --cluster-identifier "${cluster_name}"
+aws eks wait cluster-deleted --cluster-identifier "${cluster_name}"
 aws eks describe-cluster --name "${cluster_name}" --query "cluster.status"
 aws cloudformation delete-stack --stack-name "${cluster_name}"
 
