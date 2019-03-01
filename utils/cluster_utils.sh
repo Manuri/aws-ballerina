@@ -109,3 +109,39 @@ function read_property_file() {
     unset IFS
 }
 
+function cleanup_cluster() {
+    local cluster_name=$1
+    #delete cluster resources
+    aws cloudformation delete-stack --stack-name "${cluster_name}-worker-nodes"
+    aws eks delete-cluster --name "${cluster_name}"
+    aws eks wait cluster-deleted --name "${cluster_name}"
+    aws eks describe-cluster --name "${cluster_name}" --query "cluster.status"
+
+    aws cloudformation delete-stack --stack-name=EKS-$cluster_name-ControlPlane
+    aws cloudformation wait stack-delete-complete --stack-name=EKS-$cluster_name-ControlPlane
+
+    aws cloudformation delete-stack --stack-name=EKS-$cluster_name-ServiceRole
+    aws cloudformation wait stack-delete-complete --stack-name=EKS-$cluster_name-ServiceRole
+
+    aws cloudformation delete-stack --stack-name=EKS-$cluster_name-DefaultNodeGroup
+    aws cloudformation wait stack-delete-complete --stack-name=EKS-$cluster_name-DefaultNodeGroup
+
+    aws cloudformation delete-stack --stack-name=EKS-$cluster_name-VPC
+
+
+    #eksctl delete cluster --name=$cluster_name
+    echo " cluster resources deletion triggered"
+
+}
+
+function delete_k8s_services() {
+    services_to_be_deleted=$1
+    IFS=',' read -r -a services_array <<< ${services_to_be_deleted}
+    unset IFS
+
+    for service in "${services_array[@]}"
+    do
+       echo "Deleting $service"
+       kubectl delete svc ${service}
+    done
+}
