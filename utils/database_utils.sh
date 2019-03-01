@@ -49,11 +49,11 @@ function create_default_database_and_write_infra_properties() {
     database_name=$(generate_random_db_name)
 
     #### CREATE DATABASE AND RETRIEVE THE HOST
-    create_database ${database_type} ${database_version} ${database_name} database_host_key
+    create_database ${database_type} ${database_version} ${database_name} database_host
 
     #### WRITE INFRA PROPERTIES TO BE PROPAGATED INTO DEPLOYMENT STAGE
     declare -A infra_props;
-    infra_props[${database_host_key}]=${database_host_key}
+    infra_props[${database_host_key}]=${database_host}
     infra_props[${database_port_key}]=$(get_db_port ${database_type})
     infra_props[${database_username_key}]="masterawsuser"
     infra_props[${database_password_key}]="masteruserpassword"
