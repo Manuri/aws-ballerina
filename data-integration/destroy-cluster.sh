@@ -51,10 +51,10 @@ aws cloudformation wait stack-delete-complete --stack-name=EKS-$cluster_name-Con
 aws cloudformation delete-stack --stack-name=EKS-$cluster_name-ServiceRole
 aws cloudformation wait stack-delete-complete --stack-name=EKS-$cluster_name-ServiceRole
 
-aws cloudformation delete-stack --stack-name=EKS-$cluster_name-VPC
-aws cloudformation wait stack-delete-complete --stack-name=EKS-$cluster_name-VPC
-
 aws cloudformation delete-stack --stack-name=EKS-$cluster_name-DefaultNodeGroup
+aws cloudformation wait stack-delete-complete --stack-name=EKS-$cluster_name-DefaultNodeGroup
+
+aws cloudformation delete-stack --stack-name=EKS-$cluster_name-VPC
 
 
 #eksctl delete cluster --name=$cluster_name
